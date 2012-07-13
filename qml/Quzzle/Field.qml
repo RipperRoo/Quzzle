@@ -27,8 +27,6 @@ Rectangle {
         MouseArea {
             id: mouseArea
             property variant clickedQuzzle;
-            property variant dragRow;
-            property variant dragColumn;
             property variant dragDirection: Drag.XandYAxis;
             property int initialColumn: 0;
             property int initialRow: 0;
@@ -60,24 +58,62 @@ Rectangle {
             onReleased: {
                 if (clickedQuzzle != null)
                     clickedQuzzle.state = ""
+
+
+                if (dragDirection == Drag.XAxis) {
+                    for (var i = 0; i < FieldJS.maxColumn; ++i)
+                        FieldJS.board[FieldJS.index(i, initialRow)].state = "";
+                } else if (dragDirection == Drag.YAxis) {
+                    for (var i = 0; i < FieldJS.maxRow; ++i)
+                        FieldJS.board[FieldJS.index(initialColumn, i)].state = "";
+                }
                 dragDirection = Drag.XandYAxis
+                initialColumn = -1
+                initialRow = -1
             }
             onMousePositionChanged: {
                 if (clickedQuzzle == null)
                     return;
 
                 if (dragDirection == Drag.XandYAxis) {
-                     if (Math.abs(clickedQuzzle.clickedX - clickedQuzzle.x) > dragThreshold) {
+                    if (Math.abs(clickedQuzzle.clickedX - clickedQuzzle.x) > dragThreshold) {
                         dragDirection = Drag.XAxis;
+                        for (var i = 0; i < FieldJS.maxColumn; ++i) {
+                            var daQuzzle = FieldJS.board[FieldJS.index(i, initialRow)];
+                            if (daQuzzle != clickedQuzzle) {
+                                clickedQuzzle.y = daQuzzle.y
+                                daQuzzle.clickedX = daQuzzle.x;
+                                daQuzzle.clickedY = daQuzzle.y
+                                daQuzzle.state = "clicked";
+                                daQuzzle.x = mouseX - i * FieldJS.quzzleSize + xDiff
+                            }
+                        }
                     } else if (Math.abs(clickedQuzzle.clickedY - clickedQuzzle.y) > dragThreshold) {
                         dragDirection = Drag.YAxis;
+                        for (var i = 0; i < FieldJS.maxRow; ++i) {
+                            var daQuzzle = FieldJS.board[FieldJS.index(initialColumn, i)];
+                            if (daQuzzle != clickedQuzzle) {
+                                clickedQuzzle.x = daQuzzle.x
+                                daQuzzle.clickedX = daQuzzle.x;
+                                daQuzzle.clickedY = daQuzzle.y
+                                daQuzzle.state = "clicked";
+                                daQuzzle.y = mouseY - i * FieldJS.quzzleSize + yDiff
+                            }
+                        }
+                    } else {
+                        clickedQuzzle.y = mouseY - yDiff
+                        clickedQuzzle.x = mouseX - xDiff
                     }
-                    clickedQuzzle.y = mouseY - yDiff
-                    clickedQuzzle.x = mouseX - xDiff
                 } else if (dragDirection == Drag.XAxis) {
-
+                    for (var i = 0; i < FieldJS.maxColumn; ++i) {
+                        var daQuzzle = FieldJS.board[FieldJS.index(i, initialRow)];
+                        daQuzzle.x = (i - initialColumn) * FieldJS.quzzleSize + mouseX - xDiff
+                    }
                 } else if (dragDirection == Drag.YAxis) {
-
+                    for (var i = 0; i < FieldJS.maxRow; ++i) {
+                        var daQuzzle = FieldJS.board[FieldJS.index(initialColumn, i)];
+                        daQuzzle.y = (i - initialRow) * FieldJS.quzzleSize + mouseY - yDiff
+                    }
                 }
             }
         }

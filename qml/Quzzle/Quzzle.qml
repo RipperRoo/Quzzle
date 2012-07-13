@@ -73,7 +73,7 @@ Image {
     transitions: [
     Transition {
             to: ""
-            NumberAnimation { properties: "x,y"; easing.type: Easing.OutElastic; duration: 500}
+            NumberAnimation { properties: "x,y"; easing.type: Easing.OutElastic; duration: 750}
         }
     ]
 
