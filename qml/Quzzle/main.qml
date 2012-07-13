@@ -2,5 +2,4 @@
 import QtQuick 1.1
 
 Field {
-    id: field;
 }

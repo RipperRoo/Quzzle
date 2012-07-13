@@ -1,9 +1,9 @@
-
 var quzzleSize = 50;
 var maxColumn = 6;
 var maxRow = 6;
 var maxIndex = maxColumn * maxRow;
 var board = new Array(maxIndex)
+var backupBoard = new Array(maxIndex);
 var component;
 var attempts = 0;
 
@@ -81,8 +81,8 @@ function createQuzzle(column, row) {
         if (attempts == 50)
             return false;
 
-        dynamicObject.x = 25 + column * quzzleSize;
-        dynamicObject.y = 25 + row * quzzleSize;
+        dynamicObject.x = column * quzzleSize;
+        dynamicObject.y = row * quzzleSize;
         dynamicObject.z = 1
         dynamicObject.width = quzzleSize;
         dynamicObject.height = quzzleSize;
@@ -93,4 +93,11 @@ function createQuzzle(column, row) {
         return false
     }
     return true;
+}
+
+function storeBoard() {
+    for (var i = 0; i < backupBoard.length; ++i)
+        if (backupBoard[i] != null)
+            delete backupBoard[i];
+    backupBoard = board.slice();
 }

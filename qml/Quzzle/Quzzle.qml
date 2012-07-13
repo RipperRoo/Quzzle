@@ -4,6 +4,8 @@ import QtQuick 1.1
 Image {
     property int type;
     property int attachedSameType: 0
+    property int clickedX
+    property int clickedY
     id: quzzle
     source: getImage();
     width: 50
@@ -40,14 +42,40 @@ Image {
 
     Image {
         id: eyes
-        source: mouseArea.pressed ? "../Images/Eyes_closed.png" : "../Images/Eyes_open.png"
+        source: "../Images/Eyes_open.png"
         anchors.fill: parent
     }
 
-    MouseArea {
-        id: mouseArea
-        anchors.fill: parent
+    SequentialAnimation on x{
+        id: wiggle
+        running: false
+        loops: Animation.Infinite
+        PropertyAnimation { to: x - 2; duration: 50 }
+        PropertyAnimation { to: x + 2; duration: 50 }
     }
+
+    states: [
+        State {
+            name: ""
+            PropertyChanges { target: quzzle; x: clickedX; y: clickedY }
+        },
+        State {
+            name: "clicked"
+            PropertyChanges { target: eyes; source: "../Images/Eyes_closed.png" }
+        },
+        State {
+            name: "readyToBurst"
+            PropertyChanges { target: wiggle; running: true }
+            PropertyChanges { target: eyes; source: "../Images/Eyes_closed.png" }
+        }
+    ]
+
+    transitions: [
+    Transition {
+            to: ""
+            NumberAnimation { properties: "x,y"; easing.type: Easing.OutElastic; duration: 500}
+        }
+    ]
 
     //SequentialAnimation {
     //    id: animation
